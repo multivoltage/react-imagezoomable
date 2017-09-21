@@ -1,6 +1,6 @@
 # Install
 ```sh
-    npm install 'react-imagezoomable' --save
+    npm install react-imagezoomable --save
     
 ```
 # Usage
