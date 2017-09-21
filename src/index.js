@@ -5,6 +5,11 @@ const fadeMillis = 400;
 const percBigger = 10;
 const zIndexPopup = 1500;
 
+const imageZoomableStyle = {
+  display: 'inline-block',
+  position: 'relative'
+}
+
 export default class ImageZoomable extends Component {
 
   constructor(props){
@@ -63,13 +68,8 @@ export default class ImageZoomable extends Component {
 
     if(!this.state.fullScreen){
 
-      const style = {
-        display: 'inline-block',
-        position: 'relative'
-      }
-
       return(
-        <div style={style} className="image-zoomable">
+        <div style={imageZoomableStyle} className="image-zoomable">
           {this.renderNormal()}
         </div>
       );
@@ -89,7 +89,7 @@ export default class ImageZoomable extends Component {
       }
 
       return(
-        <div className="image-zoomable">
+        <div style={imageZoomableStyle} className="image-zoomable">
           {this.renderNormal()}
           <div className="image-zoomable--fullscreen" style={fullScreenContainerStyle}>
             {this.renderFullScreen()}
@@ -138,6 +138,8 @@ export default class ImageZoomable extends Component {
     newImgWidth = (newImgWidth * unitIncrease) * (100 + percBigger) / 100;
     newImgHeight = newImgHeight * unitIncrease * (100 + percBigger) / 100;
 
+    debugger;
+    
     // for debug this ratio must be equals to initial imgRatio 
     // let newRatio = newImgWidth / newImgHeight;
     

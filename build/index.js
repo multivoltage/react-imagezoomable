@@ -111,6 +111,11 @@ var fadeMillis = 400;
 var percBigger = 10;
 var zIndexPopup = 1500;
 
+var imageZoomableStyle = {
+  display: 'inline-block',
+  position: 'relative'
+};
+
 var ImageZoomable = function (_Component) {
   _inherits(ImageZoomable, _Component);
 
@@ -168,14 +173,9 @@ var ImageZoomable = function (_Component) {
 
       if (!this.state.fullScreen) {
 
-        var style = {
-          display: 'inline-block',
-          position: 'relative'
-        };
-
         return _react2.default.createElement(
           'div',
-          { style: style, className: 'image-zoomable' },
+          { style: imageZoomableStyle, className: 'image-zoomable' },
           this.renderNormal()
         );
       } else {
@@ -194,7 +194,7 @@ var ImageZoomable = function (_Component) {
 
         return _react2.default.createElement(
           'div',
-          { className: 'image-zoomable' },
+          { style: imageZoomableStyle, className: 'image-zoomable' },
           this.renderNormal(),
           _react2.default.createElement(
             'div',
@@ -245,6 +245,8 @@ var ImageZoomable = function (_Component) {
 
       newImgWidth = newImgWidth * unitIncrease * (100 + percBigger) / 100;
       newImgHeight = newImgHeight * unitIncrease * (100 + percBigger) / 100;
+
+      debugger;
 
       // for debug this ratio must be equals to initial imgRatio 
       // let newRatio = newImgWidth / newImgHeight;
