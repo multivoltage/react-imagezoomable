@@ -1,5 +1,5 @@
 # Install
-[![rc-table](https://nodei.co/npm/rc-table.png)](https://npmjs.org/package/rc-table)
+[![react-imagezoomable](https://nodei.co/npm/react-imagezoomable.png)](https://npmjs.org/package/react-imagezoomable)
 ```sh
     npm install react-imagezoomable --save
 ```
