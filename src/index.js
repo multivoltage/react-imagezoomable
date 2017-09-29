@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
+import infoDevice from './infoDevice.js'
 
-
-const fadeMillis = 400;
-const percBigger = 10;
+const STANDARD_FADE_MILLIS = 350;
+const STANDARD_PERC_BIGGER = 10;
 const zIndexPopup = 1500;
 
 const imageZoomableStyle = {
@@ -15,6 +15,9 @@ export default class ImageZoomable extends Component {
   constructor(props){
     super(props);
 
+    this.fadeMillis = this.props.fadeMillis || STANDARD_FADE_MILLIS;
+    this.percBigger = (this.props.percBigger === null || this.props.percBigger === undefined) ? STANDARD_PERC_BIGGER : this.props.percBigger;
+
     this.state = {
       fullScreen: false,
       translateX: 0,
@@ -22,45 +25,55 @@ export default class ImageZoomable extends Component {
       hqLoaded: false,
       downloadingHq: false
     }
+  }
 
-    this.handlerMouseMove = (halfScreenX,halfScreenY) => {
-
+  handleMouseMove(halfScreenX,halfScreenY,event){
       if(!this.state.fullScreen)
         return false;
                
       event = event || window.event;
-
-      // store where the mouse was at component mounted
-      if(!this.landingX)
-        this.landingX = event.pageX;
-      
-      if(!this.landingY)
-        this.landingY = event.pageY;
-         
+             
       let percFromHalfScreenX = - (halfScreenX - event.pageX) / halfScreenX * 100;
       let percFromHalfScreenY = - (halfScreenY - event.pageY) / halfScreenY * 100;
-      
+
+      this.setTranslatedPos(percFromHalfScreenX,percFromHalfScreenY);
+  }
+
+  handleTouchMove(halfScreenX,halfScreenY,event){
+      if(!this.state.fullScreen)
+        return false;
+
+      let touchobj = event.changedTouches[0];
+
+      let percFromHalfScreenX = - (halfScreenX - touchobj.clientX) / halfScreenX * 100;
+      let percFromHalfScreenY = - (halfScreenY - touchobj.clientY) / halfScreenY * 100;
+    
+      this.setTranslatedPos(percFromHalfScreenX,percFromHalfScreenY);  
+  }
+
+  setTranslatedPos(percFromHalfScreenX, percFromHalfScreenY){
       this.setState({
         translateX: this.newLeft * percFromHalfScreenX / 100,
-        translateY: - (this.newTop * percFromHalfScreenY * 100 / 100) / 100 
-      });      
-    }
+        translateY: - (this.newTop * percFromHalfScreenY) / 100
+      });  
   }
 
   componentDidMount(){
     let halfScreenX = window.innerWidth / 2;
     let halfScreenY = window.innerHeight / 2;
 
-    if('onmousemove' in document.documentElement)
-      document.addEventListener('mousemove',this.handlerMouseMove.bind(this,halfScreenX,halfScreenY));  
-    else 
-      document.addEventListener('touchmove',this.handlerMouseMove.bind(this,halfScreenX,halfScreenY));
+    infoDevice.init();
+    if(infoDevice.isTouchOnly()){
+      document.addEventListener('touchmove',this.handleTouchMove.bind(this,halfScreenX,halfScreenY));  
+    } else {
+      document.addEventListener('mousemove',this.handleMouseMove.bind(this,halfScreenX,halfScreenY));  
+    }
   }
 
   componentWillUnmount(){
-    if('onmousemove' in document.documentElement)
-      document.removeEventListener('mousemove',this.handlerMouseMove);
-    else 
+    if('touchmove' in document.documentElement)
+      document.removeEventListener('touchmove',this.handlerMouseMove);
+    if('mousemove' in document.documentElement) 
       document.removeEventListener('touchmove',this.handlerMouseMove);
   }
   
@@ -80,7 +93,7 @@ export default class ImageZoomable extends Component {
         position: 'fixed',
         boxSizing: 'border-box',        
         opacity: this.state.hqLoaded ? '1' : '0',
-        transition: `opacity ${fadeMillis/1000}s ease-in-out`,
+        transition: `opacity ${this.fadeMillis/1000}s ease-in-out`,
         zIndex: zIndexPopup,
         width: '100%',
         height: '100%',
@@ -91,7 +104,8 @@ export default class ImageZoomable extends Component {
       return(
         <div style={imageZoomableStyle} className="image-zoomable">
           {this.renderNormal()}
-          <div className="image-zoomable--fullscreen" style={fullScreenContainerStyle}>
+          <div className="image-zoomable--fullscreen" style={fullScreenContainerStyle}
+            onTransitionEnd={this.handleFullContainerTransitionEnd.bind(this)}>
             {this.renderFullScreen()}
           </div>
         </div>      
@@ -103,7 +117,7 @@ export default class ImageZoomable extends Component {
 
     const imgStyle = {
         opacity: this.state.hqLoaded ? '0' : '1',
-        transition: `opacity ${fadeMillis/1000}s ease-in-out`,
+        transition: `opacity ${this.fadeMillis/1000}s ease-in-out`,
         maxWidth: '100%'
     }
     return (
@@ -116,30 +130,28 @@ export default class ImageZoomable extends Component {
   renderFullScreen(){
 
     let screeRatio = window.innerWidth / window.innerHeight;
-    let imgRatio = parseInt(this.props.hqWidth) / parseInt(this.props.hqHeight);
+    let imgRatio = this.props.hqWidth / this.props.hqHeight;
     
     let newImgWidth, newImgHeight, unitIncrease;
     
     // rS > rI ? (iW*sW/iH,sH) : (sW,iH*sW/iW)
     if(screeRatio > imgRatio){
 
-      newImgWidth = parseInt(this.props.hqWidth)*window.innerHeight/parseInt(this.props.hqHeight);
+      newImgWidth = this.props.hqWidth * window.innerHeight/this.props.hqHeight;
       newImgHeight = window.innerHeight;
       unitIncrease = window.innerWidth / newImgWidth;
 
     } else {
 
       newImgWidth = window.innerWidth;
-      newImgHeight = parseInt(this.props.hqHeight)*window.innerWidth/parseInt(this.props.hqHeight);
+      newImgHeight = this.props.hqHeight * window.innerWidth/ this.props.hqHeight;
       unitIncrease = window.innerHeight / newImgHeight;
 
     }
     
-    newImgWidth = (newImgWidth * unitIncrease) * (100 + percBigger) / 100;
-    newImgHeight = newImgHeight * unitIncrease * (100 + percBigger) / 100;
+    newImgWidth = (newImgWidth * unitIncrease) * (100 + this.percBigger) / 100;
+    newImgHeight = newImgHeight * unitIncrease * (100 + this.percBigger) / 100;
 
-    debugger;
-    
     // for debug this ratio must be equals to initial imgRatio 
     // let newRatio = newImgWidth / newImgHeight;
     
@@ -176,7 +188,11 @@ export default class ImageZoomable extends Component {
 
   handleImageLoaded(){
     this.setState({ hqLoaded: true, downloadingHq: false });
+  }
 
+  handleFullContainerTransitionEnd(){
+    if(!this.state.hqLoaded)
+      this.setState({ fullScreen: false });
   }
 
   toogleZoom(){
@@ -189,7 +205,6 @@ export default class ImageZoomable extends Component {
       });
     } else {
       this.setState({ hqLoaded: false });
-      setTimeout(()=>{ this.setState({ fullScreen: false }); },fadeMillis);
     }
   }
 }

@@ -99,6 +99,10 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _infoDevice = __webpack_require__(3);
+
+var _infoDevice2 = _interopRequireDefault(_infoDevice);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -107,8 +111,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var fadeMillis = 400;
-var percBigger = 10;
+var STANDARD_FADE_MILLIS = 350;
+var STANDARD_PERC_BIGGER = 10;
 var zIndexPopup = 1500;
 
 var imageZoomableStyle = {
@@ -124,6 +128,9 @@ var ImageZoomable = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (ImageZoomable.__proto__ || Object.getPrototypeOf(ImageZoomable)).call(this, props));
 
+    _this.fadeMillis = _this.props.fadeMillis || STANDARD_FADE_MILLIS;
+    _this.percBigger = _this.props.percBigger === null || _this.props.percBigger === undefined ? STANDARD_PERC_BIGGER : _this.props.percBigger;
+
     _this.state = {
       fullScreen: false,
       translateX: 0,
@@ -131,41 +138,59 @@ var ImageZoomable = function (_Component) {
       hqLoaded: false,
       downloadingHq: false
     };
-
-    _this.handlerMouseMove = function (halfScreenX, halfScreenY) {
-
-      if (!_this.state.fullScreen) return false;
-
-      event = event || window.event;
-
-      // store where the mouse was at component mounted
-      if (!_this.landingX) _this.landingX = event.pageX;
-
-      if (!_this.landingY) _this.landingY = event.pageY;
-
-      var percFromHalfScreenX = -(halfScreenX - event.pageX) / halfScreenX * 100;
-      var percFromHalfScreenY = -(halfScreenY - event.pageY) / halfScreenY * 100;
-
-      _this.setState({
-        translateX: _this.newLeft * percFromHalfScreenX / 100,
-        translateY: -(_this.newTop * percFromHalfScreenY * 100 / 100) / 100
-      });
-    };
     return _this;
   }
 
   _createClass(ImageZoomable, [{
+    key: 'handleMouseMove',
+    value: function handleMouseMove(halfScreenX, halfScreenY, event) {
+      if (!this.state.fullScreen) return false;
+
+      event = event || window.event;
+
+      var percFromHalfScreenX = -(halfScreenX - event.pageX) / halfScreenX * 100;
+      var percFromHalfScreenY = -(halfScreenY - event.pageY) / halfScreenY * 100;
+
+      this.setTranslatedPos(percFromHalfScreenX, percFromHalfScreenY);
+    }
+  }, {
+    key: 'handleTouchMove',
+    value: function handleTouchMove(halfScreenX, halfScreenY, event) {
+      if (!this.state.fullScreen) return false;
+
+      var touchobj = event.changedTouches[0];
+
+      var percFromHalfScreenX = -(halfScreenX - touchobj.clientX) / halfScreenX * 100;
+      var percFromHalfScreenY = -(halfScreenY - touchobj.clientY) / halfScreenY * 100;
+
+      this.setTranslatedPos(percFromHalfScreenX, percFromHalfScreenY);
+    }
+  }, {
+    key: 'setTranslatedPos',
+    value: function setTranslatedPos(percFromHalfScreenX, percFromHalfScreenY) {
+      this.setState({
+        translateX: this.newLeft * percFromHalfScreenX / 100,
+        translateY: -(this.newTop * percFromHalfScreenY) / 100
+      });
+    }
+  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
       var halfScreenX = window.innerWidth / 2;
       var halfScreenY = window.innerHeight / 2;
 
-      if ('onmousemove' in document.documentElement) document.addEventListener('mousemove', this.handlerMouseMove.bind(this, halfScreenX, halfScreenY));else document.addEventListener('touchmove', this.handlerMouseMove.bind(this, halfScreenX, halfScreenY));
+      _infoDevice2.default.init();
+      if (_infoDevice2.default.isTouchOnly()) {
+        document.addEventListener('touchmove', this.handleTouchMove.bind(this, halfScreenX, halfScreenY));
+      } else {
+        document.addEventListener('mousemove', this.handleMouseMove.bind(this, halfScreenX, halfScreenY));
+      }
     }
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
-      if ('onmousemove' in document.documentElement) document.removeEventListener('mousemove', this.handlerMouseMove);else document.removeEventListener('touchmove', this.handlerMouseMove);
+      if ('touchmove' in document.documentElement) document.removeEventListener('touchmove', this.handlerMouseMove);
+      if ('mousemove' in document.documentElement) document.removeEventListener('touchmove', this.handlerMouseMove);
     }
   }, {
     key: 'render',
@@ -184,7 +209,7 @@ var ImageZoomable = function (_Component) {
           position: 'fixed',
           boxSizing: 'border-box',
           opacity: this.state.hqLoaded ? '1' : '0',
-          transition: 'opacity ' + fadeMillis / 1000 + 's ease-in-out',
+          transition: 'opacity ' + this.fadeMillis / 1000 + 's ease-in-out',
           zIndex: zIndexPopup,
           width: '100%',
           height: '100%',
@@ -198,7 +223,8 @@ var ImageZoomable = function (_Component) {
           this.renderNormal(),
           _react2.default.createElement(
             'div',
-            { className: 'image-zoomable--fullscreen', style: fullScreenContainerStyle },
+            { className: 'image-zoomable--fullscreen', style: fullScreenContainerStyle,
+              onTransitionEnd: this.handleFullContainerTransitionEnd.bind(this) },
             this.renderFullScreen()
           )
         );
@@ -210,7 +236,7 @@ var ImageZoomable = function (_Component) {
 
       var imgStyle = {
         opacity: this.state.hqLoaded ? '0' : '1',
-        transition: 'opacity ' + fadeMillis / 1000 + 's ease-in-out',
+        transition: 'opacity ' + this.fadeMillis / 1000 + 's ease-in-out',
         maxWidth: '100%'
       };
       return _react2.default.createElement(
@@ -224,7 +250,7 @@ var ImageZoomable = function (_Component) {
     value: function renderFullScreen() {
 
       var screeRatio = window.innerWidth / window.innerHeight;
-      var imgRatio = parseInt(this.props.hqWidth) / parseInt(this.props.hqHeight);
+      var imgRatio = this.props.hqWidth / this.props.hqHeight;
 
       var newImgWidth = void 0,
           newImgHeight = void 0,
@@ -233,20 +259,18 @@ var ImageZoomable = function (_Component) {
       // rS > rI ? (iW*sW/iH,sH) : (sW,iH*sW/iW)
       if (screeRatio > imgRatio) {
 
-        newImgWidth = parseInt(this.props.hqWidth) * window.innerHeight / parseInt(this.props.hqHeight);
+        newImgWidth = this.props.hqWidth * window.innerHeight / this.props.hqHeight;
         newImgHeight = window.innerHeight;
         unitIncrease = window.innerWidth / newImgWidth;
       } else {
 
         newImgWidth = window.innerWidth;
-        newImgHeight = parseInt(this.props.hqHeight) * window.innerWidth / parseInt(this.props.hqHeight);
+        newImgHeight = this.props.hqHeight * window.innerWidth / this.props.hqHeight;
         unitIncrease = window.innerHeight / newImgHeight;
       }
 
-      newImgWidth = newImgWidth * unitIncrease * (100 + percBigger) / 100;
-      newImgHeight = newImgHeight * unitIncrease * (100 + percBigger) / 100;
-
-      debugger;
+      newImgWidth = newImgWidth * unitIncrease * (100 + this.percBigger) / 100;
+      newImgHeight = newImgHeight * unitIncrease * (100 + this.percBigger) / 100;
 
       // for debug this ratio must be equals to initial imgRatio 
       // let newRatio = newImgWidth / newImgHeight;
@@ -284,10 +308,13 @@ var ImageZoomable = function (_Component) {
       this.setState({ hqLoaded: true, downloadingHq: false });
     }
   }, {
+    key: 'handleFullContainerTransitionEnd',
+    value: function handleFullContainerTransitionEnd() {
+      if (!this.state.hqLoaded) this.setState({ fullScreen: false });
+    }
+  }, {
     key: 'toogleZoom',
     value: function toogleZoom() {
-      var _this2 = this;
-
       var tapToExit = this.state.fullScreen;
 
       if (!this.state.fullScreen) {
@@ -297,9 +324,6 @@ var ImageZoomable = function (_Component) {
         });
       } else {
         this.setState({ hqLoaded: false });
-        setTimeout(function () {
-          _this2.setState({ fullScreen: false });
-        }, fadeMillis);
       }
     }
   }]);
@@ -308,6 +332,43 @@ var ImageZoomable = function (_Component) {
 }(_react.Component);
 
 exports.default = ImageZoomable;
+
+/***/ }),
+/* 2 */,
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var infoDevice = {
+
+    agent: {},
+
+    init: function init() {
+        this.agent = window.navigator.userAgent.toLowerCase();
+    },
+    search: function search(needle) {
+        return this.agent.indexOf(needle) !== -1;
+    },
+    windows: function windows() {
+        return this.search('windows');
+    },
+    isTouch: function isTouch() {
+        return 'ontouchstart' in window || navigator.msMaxTouchPoints > 0;
+    },
+    isTouchHybrid: function isTouchHybrid() {
+        return this.windows() && this.isTouch();
+    },
+    isTouchOnly: function isTouchOnly() {
+        return this.isTouch() && !this.isTouchHybrid();
+    }
+};
+
+exports.default = infoDevice;
 
 /***/ })
 /******/ ]);
