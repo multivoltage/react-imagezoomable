@@ -28,3 +28,6 @@ You can find simple example on [codesandbox](https://1j86yy833.codesandbox.io/)
 # New Versions 0.2.0
 - add percBigger and fadeInMillis props
 - NOW WORK ALSO IN TOUCH SCREEN DEVICE
+
+# New Versions 0.2.1
+- fix fadeInMillis props
