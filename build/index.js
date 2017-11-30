@@ -7,7 +7,7 @@
 		exports["react-imagezoomable"] = factory(require("react"));
 	else
 		root["react-imagezoomable"] = factory(root["react"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_0__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -73,17 +73,53 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var infoDevice = {
+
+    agent: {},
+
+    init: function init() {
+        this.agent = window.navigator.userAgent.toLowerCase();
+    },
+    search: function search(needle) {
+        return this.agent.indexOf(needle) !== -1;
+    },
+    windows: function windows() {
+        return this.search('windows');
+    },
+    isTouch: function isTouch() {
+        return 'ontouchstart' in window || navigator.msMaxTouchPoints > 0;
+    },
+    isTouchHybrid: function isTouchHybrid() {
+        return this.windows() && this.isTouch();
+    },
+    isTouchOnly: function isTouchOnly() {
+        return this.isTouch() && !this.isTouchHybrid();
+    }
+};
+
+exports.default = infoDevice;
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports) {
 
 module.exports = require("react");
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -95,11 +131,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = __webpack_require__(0);
+var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _infoDevice = __webpack_require__(3);
+var _infoDevice = __webpack_require__(0);
 
 var _infoDevice2 = _interopRequireDefault(_infoDevice);
 
@@ -128,7 +164,7 @@ var ImageZoomable = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (ImageZoomable.__proto__ || Object.getPrototypeOf(ImageZoomable)).call(this, props));
 
-    _this.fadeMillis = _this.props.fadeMillis || STANDARD_FADE_MILLIS;
+    _this.fadeMillis = _this.props.fadeInMillis || STANDARD_FADE_MILLIS;
     _this.percBigger = _this.props.percBigger === null || _this.props.percBigger === undefined ? STANDARD_PERC_BIGGER : _this.props.percBigger;
 
     _this.state = {
@@ -315,7 +351,6 @@ var ImageZoomable = function (_Component) {
   }, {
     key: 'toogleZoom',
     value: function toogleZoom() {
-      var tapToExit = this.state.fullScreen;
 
       if (!this.state.fullScreen) {
         this.setState({
@@ -332,43 +367,6 @@ var ImageZoomable = function (_Component) {
 }(_react.Component);
 
 exports.default = ImageZoomable;
-
-/***/ }),
-/* 2 */,
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-var infoDevice = {
-
-    agent: {},
-
-    init: function init() {
-        this.agent = window.navigator.userAgent.toLowerCase();
-    },
-    search: function search(needle) {
-        return this.agent.indexOf(needle) !== -1;
-    },
-    windows: function windows() {
-        return this.search('windows');
-    },
-    isTouch: function isTouch() {
-        return 'ontouchstart' in window || navigator.msMaxTouchPoints > 0;
-    },
-    isTouchHybrid: function isTouchHybrid() {
-        return this.windows() && this.isTouch();
-    },
-    isTouchOnly: function isTouchOnly() {
-        return this.isTouch() && !this.isTouchHybrid();
-    }
-};
-
-exports.default = infoDevice;
 
 /***/ })
 /******/ ]);

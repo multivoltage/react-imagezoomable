@@ -15,7 +15,7 @@ export default class ImageZoomable extends Component {
   constructor(props){
     super(props);
 
-    this.fadeMillis = this.props.fadeMillis || STANDARD_FADE_MILLIS;
+    this.fadeMillis = this.props.fadeInMillis || STANDARD_FADE_MILLIS;
     this.percBigger = (this.props.percBigger === null || this.props.percBigger === undefined) ? STANDARD_PERC_BIGGER : this.props.percBigger;
 
     this.state = {
@@ -196,7 +196,6 @@ export default class ImageZoomable extends Component {
   }
 
   toogleZoom(){
-    let tapToExit = this.state.fullScreen;
 
     if(!this.state.fullScreen){
       this.setState({ 
