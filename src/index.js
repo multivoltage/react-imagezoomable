@@ -23,7 +23,8 @@ export default class ImageZoomable extends Component {
       translateX: 0,
       translateY: 0,
       hqLoaded: false,
-      downloadingHq: false
+      downloadingHq: false,
+      naturalDimension: null
     }
   }
 
@@ -129,22 +130,26 @@ export default class ImageZoomable extends Component {
 
   renderFullScreen(){
 
+    if(!this.state.naturalDimension){
+      return <img onClick={this.toogleZoom.bind(this)} ref="imgFullScreen" src={this.props.uriHD} onLoad={this.handleImageLoaded.bind(this)} />
+    }
+    
     let screeRatio = window.innerWidth / window.innerHeight;
-    let imgRatio = this.props.hqWidth / this.props.hqHeight;
+    let imgRatio = this.state.naturalDimension.n_width / this.state.naturalDimension.n_height;
     
     let newImgWidth, newImgHeight, unitIncrease;
     
     // rS > rI ? (iW*sW/iH,sH) : (sW,iH*sW/iW)
     if(screeRatio > imgRatio){
 
-      newImgWidth = this.props.hqWidth * window.innerHeight/this.props.hqHeight;
+      newImgWidth = this.state.naturalDimension.n_width * window.innerHeight/ this.state.naturalDimension.n_height;
       newImgHeight = window.innerHeight;
       unitIncrease = window.innerWidth / newImgWidth;
 
     } else {
 
       newImgWidth = window.innerWidth;
-      newImgHeight = this.props.hqHeight * window.innerWidth/ this.props.hqHeight;
+      newImgHeight = this.state.naturalDimension.n_height * window.innerWidth/ this.state.naturalDimension.n_width;
       unitIncrease = window.innerHeight / newImgHeight;
 
     }
@@ -187,7 +192,22 @@ export default class ImageZoomable extends Component {
   }
 
   handleImageLoaded(){
-    this.setState({ hqLoaded: true, downloadingHq: false });
+    
+    var naturalDimension = null;
+
+    // probably is alread defined when this method is called
+    if(this.refs.imgFullScreen){
+      naturalDimension = {
+        n_width: this.refs.imgFullScreen.naturalWidth,
+        n_height: this.refs.imgFullScreen.naturalHeight
+      }
+    }
+
+    this.setState({
+      hqLoaded: true,
+      downloadingHq: false,
+      naturalDimension: naturalDimension || null
+    });
   }
 
   handleFullContainerTransitionEnd(){

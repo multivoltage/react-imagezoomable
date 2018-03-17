@@ -172,7 +172,8 @@ var ImageZoomable = function (_Component) {
       translateX: 0,
       translateY: 0,
       hqLoaded: false,
-      downloadingHq: false
+      downloadingHq: false,
+      naturalDimension: null
     };
     return _this;
   }
@@ -285,8 +286,12 @@ var ImageZoomable = function (_Component) {
     key: 'renderFullScreen',
     value: function renderFullScreen() {
 
+      if (!this.state.naturalDimension) {
+        return _react2.default.createElement('img', { onClick: this.toogleZoom.bind(this), ref: 'imgFullScreen', src: this.props.uriHD, onLoad: this.handleImageLoaded.bind(this) });
+      }
+
       var screeRatio = window.innerWidth / window.innerHeight;
-      var imgRatio = this.props.hqWidth / this.props.hqHeight;
+      var imgRatio = this.state.naturalDimension.n_width / this.state.naturalDimension.n_height;
 
       var newImgWidth = void 0,
           newImgHeight = void 0,
@@ -295,13 +300,13 @@ var ImageZoomable = function (_Component) {
       // rS > rI ? (iW*sW/iH,sH) : (sW,iH*sW/iW)
       if (screeRatio > imgRatio) {
 
-        newImgWidth = this.props.hqWidth * window.innerHeight / this.props.hqHeight;
+        newImgWidth = this.state.naturalDimension.n_width * window.innerHeight / this.state.naturalDimension.n_height;
         newImgHeight = window.innerHeight;
         unitIncrease = window.innerWidth / newImgWidth;
       } else {
 
         newImgWidth = window.innerWidth;
-        newImgHeight = this.props.hqHeight * window.innerWidth / this.props.hqHeight;
+        newImgHeight = this.state.naturalDimension.n_height * window.innerWidth / this.state.naturalDimension.n_width;
         unitIncrease = window.innerHeight / newImgHeight;
       }
 
@@ -341,7 +346,22 @@ var ImageZoomable = function (_Component) {
   }, {
     key: 'handleImageLoaded',
     value: function handleImageLoaded() {
-      this.setState({ hqLoaded: true, downloadingHq: false });
+
+      var naturalDimension = null;
+
+      // probably is alread defined when this method is called
+      if (this.refs.imgFullScreen) {
+        naturalDimension = {
+          n_width: this.refs.imgFullScreen.naturalWidth,
+          n_height: this.refs.imgFullScreen.naturalHeight
+        };
+      }
+
+      this.setState({
+        hqLoaded: true,
+        downloadingHq: false,
+        naturalDimension: naturalDimension || null
+      });
     }
   }, {
     key: 'handleFullContainerTransitionEnd',
