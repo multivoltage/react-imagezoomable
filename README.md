@@ -4,6 +4,7 @@
     npm install react-imagezoomable --save
 ```
 # Demo
+You can find a good example on [stoneisland30](http://www.stoneisland30.com/en/extra/)
 You can find simple example on [codesandbox](https://1j86yy833.codesandbox.io/)
 # Usage
 

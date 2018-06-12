@@ -1,6 +1,6 @@
 {
   "name": "react-imagezoomable",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "image witch zoom to fullscreen and with mouse movement",
   "main": "build/index.js",
   "repository": {
@@ -17,7 +17,6 @@
     "react": "^15.5.4"
   },
   "dependencies": {
-    "react": "^15.5.4",
     "webpack": "^2.6.1"
   },
   "scripts": {
