@@ -14,7 +14,7 @@
     "zoom"
   ],
   "peerDependencies": {
-    "react": "^15.5.4"
+    "react": "^16.8.5"
   },
   "dependencies": {
     "webpack": "^2.6.1"

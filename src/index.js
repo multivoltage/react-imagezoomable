@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, useState, useEffect } from 'react'
 import infoDevice from './infoDevice.js'
 
 const STANDARD_FADE_MILLIS = 350;
@@ -10,224 +10,109 @@ const imageZoomableStyle = {
   position: 'relative'
 }
 
-export default class ImageZoomable extends Component {
-
-  constructor(props){
-    super(props);
-
-    this.fadeMillis = this.props.fadeInMillis || STANDARD_FADE_MILLIS;
-    this.percBigger = (this.props.percBigger === null || this.props.percBigger === undefined) ? STANDARD_PERC_BIGGER : this.props.percBigger;
-
-    this.state = {
-      fullScreen: false,
-      translateX: 0,
-      translateY: 0,
-      hqLoaded: false,
-      downloadingHq: false,
-      naturalDimension: null
-    }
+const NormalImage = ({ hqLoaded, fadeInMillis, uri, toogleZoom }) => {
+  const imgStyle = {
+    opacity: hqLoaded ? '0' : '1',
+    transition: `opacity ${fadeInMillis / 1000}s ease-in-out`,
+    maxWidth: '100%'
   }
+  return (
+    <div className="image-zoomable--normal">
+      <img src={this.props.uri} style={imgStyle} onClick={toogleZoom.bind(this)} />
+    </div>
+  );
+}
 
-  handleMouseMove(halfScreenX,halfScreenY,event){
-      if(!this.state.fullScreen)
-        return false;
-               
-      event = event || window.event;
-             
-      let percFromHalfScreenX = - (halfScreenX - event.pageX) / halfScreenX * 100;
-      let percFromHalfScreenY = - (halfScreenY - event.pageY) / halfScreenY * 100;
+const ImageZoomable2 = (props) => {
 
-      this.setTranslatedPos(percFromHalfScreenX,percFromHalfScreenY);
-  }
+  const fadeMillis = props.fadeInMillis || STANDARD_FADE_MILLIS
+  const percBigger = (props.percBigger === null || props.percBigger === undefined) ? STANDARD_PERC_BIGGER : props.percBigger
 
-  handleTouchMove(halfScreenX,halfScreenY,event){
-      if(!this.state.fullScreen)
-        return false;
-
-      let touchobj = event.changedTouches[0];
-
-      let percFromHalfScreenX = - (halfScreenX - touchobj.clientX) / halfScreenX * 100;
-      let percFromHalfScreenY = - (halfScreenY - touchobj.clientY) / halfScreenY * 100;
-    
-      this.setTranslatedPos(percFromHalfScreenX,percFromHalfScreenY);  
-  }
-
-  setTranslatedPos(percFromHalfScreenX, percFromHalfScreenY){
-      this.setState({
-        translateX: this.newLeft * percFromHalfScreenX / 100,
-        translateY: - (this.newTop * percFromHalfScreenY) / 100
-      });  
-  }
-
-  componentDidMount(){
+  let [fullScreen, setFullScreen] = useState(false)
+  let [translateX, setTranslateX] = useState(0)
+  let [translateY, setTranslateY] = useState(0)
+  let [hqLoaded, setHqLoaded] = useState(false)
+  let [downloadingHq, setDownloadingHq] = useState(false)
+  let [naturalDimension, setNaturalDimension] = useState(null)
+  //
+  useEffect(() => {
     let halfScreenX = window.innerWidth / 2;
     let halfScreenY = window.innerHeight / 2;
 
     infoDevice.init();
-    if(infoDevice.isTouchOnly()){
-      document.addEventListener('touchmove',this.handleTouchMove.bind(this,halfScreenX,halfScreenY));  
+    if (infoDevice.isTouchOnly()) {
+      document.addEventListener('touchmove', handleTouchMove.bind(this, halfScreenX, halfScreenY));
     } else {
-      document.addEventListener('mousemove',this.handleMouseMove.bind(this,halfScreenX,halfScreenY));  
+      document.addEventListener('mousemove', handleMouseMove.bind(this, halfScreenX, halfScreenY));
     }
+
+    return () => {
+      if ('touchmove' in document.documentElement)
+        document.removeEventListener('touchmove', handleTouchMove);
+      if ('mousemove' in document.documentElement)
+        document.removeEventListener('touchmove', handleMouseMove);
+    }
+  }, [])
+  //
+  let newLeft = null
+
+  const setTranslatedPos = (percFromHalfScreenX, percFromHalfScreenY) => {
+    setTranslateX(newLeft * percFromHalfScreenX / 100)
+    setTranslateY(- (this.newTop * percFromHalfScreenY) / 100)
   }
 
-  componentWillUnmount(){
-    if('touchmove' in document.documentElement)
-      document.removeEventListener('touchmove',this.handlerMouseMove);
-    if('mousemove' in document.documentElement) 
-      document.removeEventListener('touchmove',this.handlerMouseMove);
-  }
-  
-  render(){
+  const handleMouseMove = (halfScreenX, halfScreenY, event) => {
+    if (!fullScreen)
+      return false;
 
-    if(!this.state.fullScreen){
+    event = event || window.event;
 
-      return(
-        <div style={imageZoomableStyle} className="image-zoomable">
-          {this.renderNormal()}
-        </div>
-      );
+    let percFromHalfScreenX = - (halfScreenX - event.pageX) / halfScreenX * 100;
+    let percFromHalfScreenY = - (halfScreenY - event.pageY) / halfScreenY * 100;
 
-    } else {
-
-      const fullScreenContainerStyle = {
-        position: 'fixed',
-        boxSizing: 'border-box',        
-        opacity: this.state.hqLoaded ? '1' : '0',
-        transition: `opacity ${this.fadeMillis/1000}s ease-in-out`,
-        zIndex: zIndexPopup,
-        width: '100%',
-        height: '100%',
-        top: 0,
-        left: 0
-      }
-
-      return(
-        <div style={imageZoomableStyle} className="image-zoomable">
-          {this.renderNormal()}
-          <div className="image-zoomable--fullscreen" style={fullScreenContainerStyle}
-            onTransitionEnd={this.handleFullContainerTransitionEnd.bind(this)}>
-            {this.renderFullScreen()}
-          </div>
-        </div>      
-      );
-    }
+    setTranslatedPos(percFromHalfScreenX, percFromHalfScreenY);
   }
 
-  renderNormal(){
+  const handleTouchMove = (halfScreenX, halfScreenY, event) => {
+    if (!fullScreen)
+      return false;
 
-    const imgStyle = {
-        opacity: this.state.hqLoaded ? '0' : '1',
-        transition: `opacity ${this.fadeMillis/1000}s ease-in-out`,
-        maxWidth: '100%'
-    }
-    return (
-      <div className="image-zoomable--normal">
-        <img src={this.props.uri} style={imgStyle} onClick={this.toogleZoom.bind(this)}/>
-      </div>
-    );
+    let touchobj = event.changedTouches[0];
+
+    let percFromHalfScreenX = - (halfScreenX - touchobj.clientX) / halfScreenX * 100;
+    let percFromHalfScreenY = - (halfScreenY - touchobj.clientY) / halfScreenY * 100;
+
+    setTranslatedPos(percFromHalfScreenX, percFromHalfScreenY);
   }
 
-  renderFullScreen(){
+  const handleImageLoaded = () => {
 
-    if(!this.state.naturalDimension){
-      return <img onClick={this.toogleZoom.bind(this)} ref="imgFullScreen" src={this.props.uriHD} onLoad={this.handleImageLoaded.bind(this)} />
-    }
-    
-    let screeRatio = window.innerWidth / window.innerHeight;
-    let imgRatio = this.state.naturalDimension.n_width / this.state.naturalDimension.n_height;
-    
-    let newImgWidth, newImgHeight, unitIncrease;
-    
-    // rS > rI ? (iW*sW/iH,sH) : (sW,iH*sW/iW)
-    if(screeRatio > imgRatio){
-
-      newImgWidth = this.state.naturalDimension.n_width * window.innerHeight/ this.state.naturalDimension.n_height;
-      newImgHeight = window.innerHeight;
-      unitIncrease = window.innerWidth / newImgWidth;
-
-    } else {
-
-      newImgWidth = window.innerWidth;
-      newImgHeight = this.state.naturalDimension.n_height * window.innerWidth/ this.state.naturalDimension.n_width;
-      unitIncrease = window.innerHeight / newImgHeight;
-
-    }
-    
-    newImgWidth = (newImgWidth * unitIncrease) * (100 + this.percBigger) / 100;
-    newImgHeight = newImgHeight * unitIncrease * (100 + this.percBigger) / 100;
-
-    // for debug this ratio must be equals to initial imgRatio 
-    // let newRatio = newImgWidth / newImgHeight;
-    
-    let newLeft = - (newImgWidth - window.innerWidth) / 2;
-    let newTop =  (newImgHeight - window.innerHeight) / 2;  
-
-    if(!this.newLeft){
-      this.newLeft = newLeft;
-    }
-    if(!this.newTop){
-      this.newTop = newTop;
-    }
-    
-    let imgStyle = {
-      top: - newTop,
-      left: newLeft,
-      width: newImgWidth,
-      height: newImgHeight,
-      transform: `translate(${this.state.translateX}px,${this.state.translateY}px)`,
-      border: this.props.debug ? '10px solid red' : 'none',
-      maxWidth: 'none',
-      position: 'absolute',
-      right: 0,
-      zIndex: zIndexPopup,
-      willChange: 'transform',
-      boxSizing: 'border-box'
-    }
-
-    return (
-        <img onClick={this.toogleZoom.bind(this)} ref="imgFullScreen" style={imgStyle} src={this.props.uriHD} onLoad={this.handleImageLoaded.bind(this)} />
-    );
-
-  }
-
-  handleImageLoaded(){
-    
-    var naturalDimension = null;
-
-    // probably is alread defined when this method is called
-    if(this.refs.imgFullScreen){
+    let naturalDimension = null
+    if (this.refs.imgFullScreen) {
       naturalDimension = {
         n_width: this.refs.imgFullScreen.naturalWidth,
         n_height: this.refs.imgFullScreen.naturalHeight
       }
     }
 
-    this.setState({
-      hqLoaded: true,
-      downloadingHq: false,
-      naturalDimension: naturalDimension || null
-    });
+    setHqLoaded(true)
+    setDownloadingHq(false)
+    setNaturalDimension(naturalDimension)
   }
 
-  handleFullContainerTransitionEnd(){
+  const handleFullContainerTransitionEnd = {
     if(!this.state.hqLoaded)
       this.setState({ fullScreen: false });
   }
 
-  toogleZoom(){
-
-    if(!this.state.fullScreen){
-      this.setState({ 
-        fullScreen: true,
-        downloadingHq: true
-      });
-    } else {
-      this.setState({ hqLoaded: false });
-    }
+  // normal state (like lansing for example)
+  if (!fullScreen) {
+    return (
+      <div style={imageZoomableStyle} className="image-zoomable">
+        <NormalImage hqLoaded={} />
+      </div>
+    )
   }
 }
 
-
-
-
+export default ImageZoomable2
