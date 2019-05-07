@@ -1,11 +1,5 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import { ImageNormal } from '../ImageNormal/ImageNormal'
-
-const imageZoomableStyle = {
-  display: 'inline-block',
-  position: 'relative',
-}
 
 export const FullScreenWapper = ({
   fadeMillis = 2000,

@@ -2,11 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 export const ImageNormal = ({ fadeMillis = 2000, hqLoaded = false, uri, toogleZoom }) => {
-  return (
-    <div>
-      <MyImg src={uri} onClick={toogleZoom} hqLoaded={hqLoaded} fadeMillis={fadeMillis} />
-    </div>
-  )
+  return <MyImg src={uri} onClick={toogleZoom} hqLoaded={hqLoaded} fadeMillis={fadeMillis} />
 }
 
 export const MyImg = styled.img`

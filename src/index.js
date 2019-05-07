@@ -87,7 +87,14 @@ export default class ImageZoomable extends Component {
   }
 
   render() {
-    if (!this.state.fullScreen) return this.renderNormal()
+    if (!this.state.fullScreen)
+      return (
+        <>
+          {/* we load also uriHd when react end loading */}
+          <img src={this.props.uriHD} hidden={true} />
+          {this.renderNormal()}
+        </>
+      )
 
     return (
       <>
@@ -105,6 +112,9 @@ export default class ImageZoomable extends Component {
   }
 
   renderNormal = () => {
+    const style = {
+      display: 'none',
+    }
     return (
       <ImageNormal
         fadeMillis={this.fadeMillis}
