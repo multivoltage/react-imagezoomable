@@ -18,10 +18,11 @@
   },
   "dependencies": {
     "react-dom": "^16.8.6",
+    "styled-components": "^4.2.0",
     "webpack": "4.30.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "webpack --watch",
     "build": "webpack",
     "storybook": "start-storybook"
@@ -35,6 +36,10 @@
     "@babel/preset-env": "^7.4.4",
     "@babel/preset-react": "^7.0.0",
     "@storybook/react": "^5.0.11",
-    "babel-loader": "^8.0.5"
+    "babel-loader": "^8.0.5",
+    "enzyme": "^3.9.0",
+    "enzyme-adapter-react-16": "^1.12.1",
+    "jest": "^24.8.0",
+    "react-test-renderer": "^16.8.6"
   }
 }
