@@ -17,6 +17,6 @@ storiesOf('<ImageNormal>', module).add('base usase', () => (
     uriHD="http://www.telegraph.co.uk/content/dam/Travel/Tours/New%20York1-xlarge.jpg"
     debug
     // percBigger={10}
-    // fadeInMillis={350}
+    fadeInMillis={350}
   />
 ))

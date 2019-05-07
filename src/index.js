@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import infoDevice from './infoDevice.js'
 import { ImageNormal } from '../src/new/components/ImageNormal/ImageNormal'
+import { FullScreenWapper } from '../src/new/components/FullScreenWapper/FullScreenWapper'
 
 const STANDARD_FADE_MILLIS = 350
 const STANDARD_PERC_BIGGER = 10
@@ -88,29 +89,18 @@ export default class ImageZoomable extends Component {
   render() {
     if (!this.state.fullScreen) return this.renderNormal()
 
-    const fullScreenContainerStyle = {
-      position: 'fixed',
-      boxSizing: 'border-box',
-      opacity: this.state.hqLoaded ? '1' : '0',
-      transition: `opacity ${this.fadeMillis / 1000}s ease-in-out`,
-      zIndex: zIndexPopup,
-      width: '100%',
-      height: '100%',
-      top: 0,
-      left: 0,
-    }
-
     return (
-      <div style={imageZoomableStyle} className="image-zoomable">
+      <>
         {this.renderNormal()}
-        <div
-          className="image-zoomable--fullscreen"
-          style={fullScreenContainerStyle}
-          onTransitionEnd={this.handleFullContainerTransitionEnd.bind(this)}
+        <FullScreenWapper
+          fadeMillis={this.fadeMillis}
+          hqLoaded={this.state.hqLoaded}
+          zIndexPopup={zIndexPopup}
+          handleFullContainerTransitionEnd={this.handleFullContainerTransitionEnd.bind(this)}
         >
           {this.renderFullScreen()}
-        </div>
-      </div>
+        </FullScreenWapper>
+      </>
     )
   }
 
