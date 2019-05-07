@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 
-export const FullScreenWapper = ({
+const FullScreenWapper = ({
   fadeMillis = 2000,
   hqLoaded = false,
   zIndexPopup = 1500,
@@ -19,6 +19,8 @@ export const FullScreenWapper = ({
     </WrapperFullScreen>
   )
 }
+
+export default FullScreenWapper
 
 const WrapperFullScreen = styled.div`
   position: fixed;

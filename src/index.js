@@ -1,16 +1,16 @@
 import React, { Component } from 'react'
 import infoDevice from './infoDevice.js'
 import { ImageNormal } from '../src/new/components/ImageNormal/ImageNormal'
-import { FullScreenWapper } from '../src/new/components/FullScreenWapper/FullScreenWapper'
+
+const FullScreenWapper = React.lazy(() =>
+  import(
+    /* webpackChunkName: 'FullScreenWapper' */ '../src/new/components/FullScreenWapper/FullScreenWapper'
+  )
+)
 
 const STANDARD_FADE_MILLIS = 350
 const STANDARD_PERC_BIGGER = 10
 const zIndexPopup = 1500
-
-const imageZoomableStyle = {
-  display: 'inline-block',
-  position: 'relative',
-}
 
 export default class ImageZoomable extends Component {
   constructor(props) {
@@ -99,14 +99,16 @@ export default class ImageZoomable extends Component {
     return (
       <>
         {this.renderNormal()}
-        <FullScreenWapper
-          fadeMillis={this.fadeMillis}
-          hqLoaded={this.state.hqLoaded}
-          zIndexPopup={zIndexPopup}
-          handleFullContainerTransitionEnd={this.handleFullContainerTransitionEnd.bind(this)}
-        >
-          {this.renderFullScreen()}
-        </FullScreenWapper>
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <FullScreenWapper
+            fadeMillis={this.fadeMillis}
+            hqLoaded={this.state.hqLoaded}
+            zIndexPopup={zIndexPopup}
+            handleFullContainerTransitionEnd={this.handleFullContainerTransitionEnd.bind(this)}
+          >
+            {this.renderFullScreen()}
+          </FullScreenWapper>
+        </React.Suspense>
       </>
     )
   }
