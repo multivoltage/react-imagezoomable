@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import infoDevice from './infoDevice.js'
 import { ImageNormal } from '../src/new/components/ImageNormal/ImageNormal'
+import { GetImageProps } from '../src/new/components/FullScreenImage/algoritms'
 
 const FullScreenWapper = React.lazy(() =>
   import(
@@ -97,7 +98,7 @@ export default class ImageZoomable extends Component {
       )
 
     return (
-      <>
+      <div>
         {this.renderNormal()}
         <React.Suspense fallback={<div>Loading...</div>}>
           <FullScreenWapper
@@ -109,14 +110,11 @@ export default class ImageZoomable extends Component {
             {this.renderFullScreen()}
           </FullScreenWapper>
         </React.Suspense>
-      </>
+      </div>
     )
   }
 
   renderNormal = () => {
-    const style = {
-      display: 'none',
-    }
     return (
       <ImageNormal
         fadeMillis={this.fadeMillis}
@@ -139,34 +137,13 @@ export default class ImageZoomable extends Component {
       )
     }
 
-    let screeRatio = window.innerWidth / window.innerHeight
-    let imgRatio = this.state.naturalDimension.n_width / this.state.naturalDimension.n_height
-
-    let newImgWidth, newImgHeight, unitIncrease
-
-    // rS > rI ? (iW*sW/iH,sH) : (sW,iH*sW/iW)
-    if (screeRatio > imgRatio) {
-      newImgWidth =
-        (this.state.naturalDimension.n_width * window.innerHeight) /
-        this.state.naturalDimension.n_height
-      newImgHeight = window.innerHeight
-      unitIncrease = window.innerWidth / newImgWidth
-    } else {
-      newImgWidth = window.innerWidth
-      newImgHeight =
-        (this.state.naturalDimension.n_height * window.innerWidth) /
-        this.state.naturalDimension.n_width
-      unitIncrease = window.innerHeight / newImgHeight
-    }
-
-    newImgWidth = (newImgWidth * unitIncrease * (100 + this.percBigger)) / 100
-    newImgHeight = (newImgHeight * unitIncrease * (100 + this.percBigger)) / 100
-
-    // for debug this ratio must be equals to initial imgRatio
-    // let newRatio = newImgWidth / newImgHeight;
-
-    let newLeft = -(newImgWidth - window.innerWidth) / 2
-    let newTop = (newImgHeight - window.innerHeight) / 2
+    const { newLeft, newTop, newImgWidth, newImgHeight } = GetImageProps(
+      window.innerWidth,
+      window.innerHeight,
+      this.state.naturalDimension.n_width,
+      this.state.naturalDimension.n_height,
+      this.percBigger
+    )
 
     if (!this.newLeft) {
       this.newLeft = newLeft

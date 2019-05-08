@@ -5,7 +5,6 @@ import { mount } from 'enzyme'
 Enzyme.configure({ adapter: new Adapter() })
 
 import { ImageNormal, MyImg } from './ImageNormal'
-import { exportAllDeclaration } from '@babel/types'
 
 const fakeUriPng = 'http://fake.com/one.png'
 
