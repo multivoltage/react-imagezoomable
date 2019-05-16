@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import styled from 'styled-components'
 import infoDevice from './infoDevice.js'
 import { ImageNormal } from '../src/new/components/ImageNormal/ImageNormal'
 import { GetImageProps } from '../src/new/components/FullScreenImage/algoritms'
@@ -31,6 +32,8 @@ export default class ImageZoomable extends Component {
       downloadingHq: false,
       naturalDimension: null,
     }
+
+    this.imgFullScreen = React.createRef()
   }
 
   handleMouseMove(halfScreenX, halfScreenY, event) {
@@ -125,12 +128,12 @@ export default class ImageZoomable extends Component {
     )
   }
 
-  renderFullScreen() {
+  renderFullScreen = () => {
     if (!this.state.naturalDimension) {
       return (
         <img
           onClick={this.toogleZoom.bind(this)}
-          ref="imgFullScreen"
+          ref={this.imgFullScreen}
           src={this.props.uriHD}
           onLoad={this.handleImageLoaded.bind(this)}
         />
@@ -178,14 +181,14 @@ export default class ImageZoomable extends Component {
     )
   }
 
-  handleImageLoaded() {
+  handleImageLoaded = () => {
     var naturalDimension = null
 
     // probably is alread defined when this method is called
-    if (this.refs.imgFullScreen) {
+    if (this.imgFullScreen.current) {
       naturalDimension = {
-        n_width: this.refs.imgFullScreen.naturalWidth,
-        n_height: this.refs.imgFullScreen.naturalHeight,
+        n_width: this.imgFullScreen.current.naturalWidth,
+        n_height: this.imgFullScreen.current.naturalHeight,
       }
     }
 

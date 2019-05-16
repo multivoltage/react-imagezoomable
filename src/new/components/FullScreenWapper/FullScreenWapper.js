@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 
 const FullScreenWapper = ({
-  fadeMillis = 2000,
+  fadeInMillis = 2000,
   hqLoaded = false,
   zIndexPopup = 1500,
   handleFullContainerTransitionEnd,
@@ -12,7 +12,7 @@ const FullScreenWapper = ({
     <WrapperFullScreen
       onTransitionEnd={handleFullContainerTransitionEnd}
       hqLoaded={hqLoaded}
-      fadeMillis={fadeMillis}
+      fadeInMillis={fadeInMillis}
       zIndexPopup={zIndexPopup}
     >
       {children}
@@ -26,7 +26,7 @@ const WrapperFullScreen = styled.div`
   position: fixed;
   box-sizing: border-box;
   opacity: ${({ hqLoaded }) => (hqLoaded ? 1 : 0)};
-  transition: ${({ fadeMillis }) => `opacity ${fadeMillis / 1000}s ease-in-out`};
+  transition: ${({ fadeInMillis }) => `opacity ${fadeInMillis / 1000}s ease-in-out`};
   z-index: ${({ zIndexPopup }) => zIndexPopup};
   width: 100%;
   height: 100%;

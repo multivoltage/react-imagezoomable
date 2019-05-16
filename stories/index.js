@@ -11,7 +11,7 @@ storiesOf('<ImageNormal>', module).add('basic behavior', () => (
   />
 ))
 
-storiesOf('<ImageNormal>', module).add('base usase', () => (
+storiesOf('<ImageZoomable>', module).add('base usase', () => (
   <ImageZoomable
     uri="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6aet0wf5IR_eWqnfWt96RfCREgsO4LjjM6qQYnELMVw7uYM9_Ag"
     uriHD="http://www.telegraph.co.uk/content/dam/Travel/Tours/New%20York1-xlarge.jpg"
