@@ -5,8 +5,9 @@ export const GetImageProps = (
   naturalImageH,
   percBigger = 0
 ) => {
-  console.log('----------------------------------')
-  console.log('input', windowInnerW, windowInnerH, naturalImgW, naturalImageH, percBigger)
+  if (!naturalImgW || !naturalImageH) return null
+  //console.log('----------------------------------')
+  //console.log('input', windowInnerW, windowInnerH, naturalImgW, naturalImageH, percBigger)
 
   const screeRatio = windowInnerW / windowInnerH
   const imgRatio = naturalImgW / naturalImageH
@@ -35,8 +36,8 @@ export const GetImageProps = (
   const newLeft = -(newImgWidth - windowInnerW) / 2
   const newTop = (newImgHeight - windowInnerH) / 2
 
-  console.log('output', newLeft, newTop, newImgWidth, newImgHeight)
-  console.log('----------------------------------')
+  // console.log('output', newLeft, newTop, newImgWidth, newImgHeight)
+  // console.log('----------------------------------')
   return {
     newLeft,
     newTop,

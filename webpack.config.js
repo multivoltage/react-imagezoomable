@@ -1,25 +1,32 @@
-var path = require("path");
+var path = require('path')
+var CompressionPlugin = require('compression-webpack-plugin')
+
 module.exports = {
-  entry: "./src/index.js",
+  entry: './src/index.js',
   output: {
-    path: path.resolve(__dirname, "build"),
-    filename: "index.js",
-    libraryTarget: "umd", // THIS IS THE MOST IMPORTANT LINE! :mindblow: I wasted more than 2 days until realize this was the line most important in all this guide.
-    library: "react-imagezoomable"
+    path: path.resolve(__dirname, 'build'),
+    filename: 'index.js',
+    libraryTarget: 'umd', // THIS IS THE MOST IMPORTANT LINE! :mindblow: I wasted more than 2 days until realize this was the line most important in all this guide.
+    library: 'react-imagezoomable',
   },
   module: {
     rules: [
       {
         test: /\.js$/,
-        include: path.resolve(__dirname, "src"),
+        include: path.resolve(__dirname, 'src'),
         exclude: /(node_modules|bower_components|build)/,
         use: {
-          loader: "babel-loader"
-        }
-      }
-    ]
+          loader: 'babel-loader',
+        },
+      },
+      {
+        test: /\.svg$/,
+        use: ['@svgr/webpack'],
+      },
+    ],
   },
   externals: {
-    react: "commonjs react" // this line is just to use the React dependency of our parent-testing-project instead of using our own React.
-  }
-};
+    react: 'commonjs react', // this line is just to use the React dependency of our parent-testing-project instead of using our own React.
+  },
+  plugins: [new CompressionPlugin()],
+}

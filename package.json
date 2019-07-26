@@ -1,8 +1,9 @@
 {
   "name": "react-imagezoomable",
-  "version": "0.3.1",
-  "description": "image witch zoom to fullscreen and with mouse movement",
+  "version": "1.0.0",
+  "description": "wrapper to open an image in full screen and move inside with mouse and touch",
   "main": "build/index.js",
+  "homepage": "https://multivoltage.github.io/react-imagezoomable/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/multivoltage/react-imagezoomable.git"
@@ -11,22 +12,25 @@
     "image",
     "react",
     "fullscreen",
-    "zoom"
+    "zoom",
+    "touch zoom",
+    "react image zoomable",
+    "fullscreen zoom",
+    "react zoom"
   ],
   "peerDependencies": {
-    "react": "^16.8.5"
-  },
-  "dependencies": {
-    "@babel/plugin-transform-react-jsx": "^7.3.0",
-    "react-dom": "^16.8.6",
-    "styled-components": "^4.2.0",
-    "webpack": "4.30.0"
+    "styled-components": "^4.2.0"
   },
   "scripts": {
     "test": "jest",
     "start": "webpack --watch",
     "build": "webpack",
-    "storybook": "start-storybook"
+    "storybook": "start-storybook",
+    "profile": "NODE_ENV=production webpack -p --profile --json > profile.json && npx webpack-bundle-analyzer profile.json",
+    "serve-storybook": "npx http-server presentation",
+    "build-storybook": "build-storybook -c .storybook -o presentation",
+    "predeploy": "npm run build",
+    "deploy-storybook": "gh-pages -d presentation"
   },
   "author": {
     "name": "Diego Tonini",
@@ -34,13 +38,27 @@
   },
   "devDependencies": {
     "@babel/core": "^7.4.4",
+    "@babel/plugin-transform-react-jsx": "^7.3.0",
     "@babel/preset-env": "^7.4.4",
     "@babel/preset-react": "^7.0.0",
     "@storybook/react": "^5.0.11",
+    "@svgr/webpack": "^4.3.2",
     "babel-loader": "^8.0.5",
+    "compression-webpack-plugin": "^3.0.0",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.12.1",
+    "gh-pages": "^2.1.1",
+    "http-server": "^0.11.1",
     "jest": "^24.8.0",
-    "react-test-renderer": "^16.8.6"
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-test-renderer": "^16.8.6",
+    "styled-components": "^4.2.0",
+    "webpack": "4.30.0",
+    "webpack-bundle-analyzer": "^3.4.1",
+    "webpack-cli": "^3.3.7"
+  },
+  "dependencies": {
+    "react-markdown": "^4.1.0"
   }
 }
