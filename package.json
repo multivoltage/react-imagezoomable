@@ -1,6 +1,6 @@
 {
   "name": "react-imagezoomable",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "wrapper to open an image in full screen and move inside with mouse and touch",
   "main": "build/index.js",
   "homepage": "https://multivoltage.github.io/react-imagezoomable/",
@@ -21,6 +21,9 @@
   "peerDependencies": {
     "styled-components": "^4.2.0"
   },
+  "files": [
+    "build/index.js"
+  ],
   "scripts": {
     "test": "jest",
     "start": "webpack --watch",
