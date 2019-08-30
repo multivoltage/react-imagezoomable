@@ -33,21 +33,22 @@ You can find my storybook on https://multivoltage.github.io/react-imagezoomable/
 # Options
 ```preloadHDtime``` ```default = 0``` 
 It defines how much time in millisecond the component will wait before load a not visible version of full screen image. This can be useful is site host a large images (some megabytes), because probably when user click on the image, the full version is already loaded and user will not wait 10 second to download the image (thanks to cache)
+[storybook-example](https://multivoltage.github.io/react-imagezoomable/?path=/story/imagezoomable--with-preloadhd-true)
 
 ```placeHolderInside``` ```default is false```
 it defines if the colored loading will be inside the small image or cover the full screen window
-[storybook-example](https://multivoltage.github.io/react-imagezoomable/?path=/story/wrapperhoc--with-placeholder-inside-small-image)
+[storybook-example](https://multivoltage.github.io/react-imagezoomable/?path=/story/imagezoomable--with-placeholder-inside-small-image)
 
 ```renderCustomPlaceholder``` ```undefined```
 if this function is provided, the component will render a custom placeholder instead the original colored loading
-[storybook-example](https://multivoltage.github.io/react-imagezoomable/?path=/story/wrapperhoc--with-placeholder-inside-small-image)
+[storybook-example](https://multivoltage.github.io/react-imagezoomable/?path=/story/imagezoomable--with-custom-placeholder-loading)
 
 ```iconZoomInEnable``` ```default is false```
 it defines if at the top-right corner of small image a zoom-in icon will be draw
-[storybook-example](https://multivoltage.github.io/react-imagezoomable/?path=/story/wrapperhoc--with-zoom-in-icon-active)
+[storybook-example](https://multivoltage.github.io/react-imagezoomable/?path=/story/imagezoomable--with-zoom-in-icon-active)
 
 ```percBigger``` ```default is 10```
-[storybook-example](https://multivoltage.github.io/react-imagezoomable/?path=/story/wrapperhoc--with-0-zoom-effect)
+[storybook-example](https://multivoltage.github.io/react-imagezoomable/?path=/story/imagezoomable--with-0-zoom-effect)
 
 ```debug``` ```default = false```
 if true you can see a red line in full screen image. This is useful for development
