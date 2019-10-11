@@ -26,7 +26,7 @@ You can find my storybook on https://multivoltage.github.io/react-imagezoomable/
 		// you can put other attributes...
 	}
     
-    <ImageZoomable imageAttr={fullImgAttr}>
+    <ImageZoomable imageAttr={fullImgAttr} options={options}>
         <img src="ball.jpg" sizes="(max-width: 320px) 280px" src-set="ball.jpg 320w"/>
     </ImageZoomable>
 ```
