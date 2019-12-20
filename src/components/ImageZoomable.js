@@ -52,7 +52,7 @@ export const ImageZoomable = ({ className, children, imageAttr, options }) => {
   }
 
   return (
-    <ImageZoomableStyled id="ciccio" className={className} onClick={toogle}>
+    <ImageZoomableStyled className={className} onClick={toogle}>
       {children}
 
       {/* this download images with lazy */}
